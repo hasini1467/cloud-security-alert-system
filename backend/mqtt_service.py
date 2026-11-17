@@ -61,7 +61,12 @@ class MqttService:
         has_certs = os.path.exists(ca_path) and os.path.exists(cert_path) and os.path.exists(key_path)
 
         if not self.endpoint or not has_certs or mqtt is None:
-            logger.info("AWS IoT Core credentials/certs not present. Operating in Local Standby MQTT listener mode.")
+            logger.warning("MQTT standby. endpoint set: %s | paho installed: %s",
+                           bool(self.endpoint), mqtt is not None)
+            for p in (ca_path, cert_path, key_path):
+                logger.warning("MQTT cert check %s exists: %s", p, os.path.exists(p))
+            logger.warning("MQTT CERTS_DIR=%s, contents: %s", CERTS_DIR,
+                           os.listdir(CERTS_DIR) if os.path.isdir(CERTS_DIR) else "folder missing")
             while not self._stop_event.is_set():
                 time.sleep(1)
             return
