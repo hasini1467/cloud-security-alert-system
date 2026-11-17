@@ -22,7 +22,8 @@ except ImportError:
 
 AWS_IOT_ENDPOINT = os.getenv("AWS_IOT_ENDPOINT", "")
 MQTT_TOPIC = os.getenv("MQTT_TOPIC", "s3/security/status")
-CERTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "certs")
+_local = os.path.join(os.path.dirname(os.path.abspath(__file__)), "certs")
+CERTS_DIR = "/etc/secrets" if os.path.exists("/etc/secrets/certificate.pem.crt") else _local
 
 
 class MqttService:
@@ -60,14 +61,21 @@ class MqttService:
         has_certs = os.path.exists(ca_path) and os.path.exists(cert_path) and os.path.exists(key_path)
 
         if not self.endpoint or not has_certs or mqtt is None:
-            logger.info("AWS IoT Core credentials/certs not present. Operating in Local Standby MQTT listener mode.")
+            logger.warning("MQTT standby: endpoint set=%s | paho installed=%s | CERTS_DIR=%s",
+                           bool(self.endpoint), mqtt is not None, CERTS_DIR)
+            for _p in (ca_path, cert_path, key_path):
+                logger.warning("MQTT cert check: %s exists=%s", _p, os.path.exists(_p))
+            logger.warning("MQTT %s contents: %s", CERTS_DIR,
+                           os.listdir(CERTS_DIR) if os.path.isdir(CERTS_DIR) else "folder missing")
             while not self._stop_event.is_set():
                 time.sleep(1)
             return
 
         logger.info("Configuring TLS connection to AWS IoT Core: %s (Topic: %s)", self.endpoint, self.topic)
         try:
-            self.client = mqtt.Client(client_id="DockerBackendSecurityMonitor", protocol=mqtt.MQTTv311)
+            self.client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1,
+                                      client_id="DockerBackendSecurityMonitor",
+                                      protocol=mqtt.MQTTv311)
             self.client.tls_set(
                 ca_certs=ca_path,
                 certfile=cert_path,
