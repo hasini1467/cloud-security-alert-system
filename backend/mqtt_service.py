@@ -22,7 +22,6 @@ except ImportError:
 
 AWS_IOT_ENDPOINT = os.getenv("AWS_IOT_ENDPOINT", "")
 MQTT_TOPIC = os.getenv("MQTT_TOPIC", "s3/security/status")
-# replace the CERTS_DIR line
 _local = os.path.join(os.path.dirname(os.path.abspath(__file__)), "certs")
 CERTS_DIR = "/etc/secrets" if os.path.exists("/etc/secrets/certificate.pem.crt") else _local
 
