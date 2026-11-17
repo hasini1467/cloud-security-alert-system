@@ -1,0 +1,9 @@
+.env
+*.pyc
+__pycache__/
+data/*.db
+certs/*.pem
+certs/*.crt
+certs/*.key
+*.zip
+.DS_Store

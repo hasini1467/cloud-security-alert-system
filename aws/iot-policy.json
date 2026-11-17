@@ -1,0 +1,33 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Connect"
+      ],
+      "Resource": "arn:aws:iot:*:*:client/DockerBackendSecurityMonitor"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Subscribe"
+      ],
+      "Resource": "arn:aws:iot:*:*:topicfilter/s3/security/*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Receive"
+      ],
+      "Resource": "arn:aws:iot:*:*:topic/s3/security/*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Publish"
+      ],
+      "Resource": "arn:aws:iot:*:*:topic/s3/security/*"
+    }
+  ]
+}
