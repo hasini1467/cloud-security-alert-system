@@ -3,8 +3,8 @@
    Uses the existing backend API: GET /api/status, GET /api/history, POST /api/scan */
 
 const REFRESH_MS = 3000;      // how often the page asks the backend for data
-const SCAN_INTERVAL_S = 10;   // the backend scans every 10 s (aws_service.py)
-const STALE_AFTER_S = 45;     // no new scan for this long => warn
+const SCAN_INTERVAL_S = 120;                    // must match your EventBridge rate
+const STALE_AFTER_S = SCAN_INTERVAL_S * 2.5;    // warn only after 2.5 missed scans
 const LOG_PAGE = 10;
 const HISTORY_LIMIT = 50;     // the backend returns at most 50 rows
 
